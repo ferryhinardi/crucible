@@ -1,5 +1,10 @@
 # Crucible
 
+[![CI](https://github.com/ferryhinardi/crucible/actions/workflows/ci.yml/badge.svg)](https://github.com/ferryhinardi/crucible/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/@crucible%2Fcore.svg)](https://www.npmjs.com/package/@crucible/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+
 Type-safe, provider-agnostic feature flags and A/B testing for React/Next.js.
 
 ## Why Crucible?
