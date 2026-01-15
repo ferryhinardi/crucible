@@ -1,4 +1,4 @@
-import type { FlagAdapter, FlagSchema, EvaluationContext, FlagVariants } from '@crucible/core';
+import type { FlagAdapter, FlagSchema, EvaluationContext, FlagVariants } from 'crucible-core';
 
 export interface RolloutRule<T extends FlagSchema> {
   flag: keyof T;

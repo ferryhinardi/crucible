@@ -1,5 +1,5 @@
 import * as ld from 'launchdarkly-node-server-sdk';
-import type { FlagAdapter, FlagSchema, EvaluationContext, FlagVariants } from '@crucible/core';
+import type { FlagAdapter, FlagSchema, EvaluationContext, FlagVariants } from 'crucible-core';
 
 export interface LaunchDarklyAdapterConfig {
   sdkKey: string;

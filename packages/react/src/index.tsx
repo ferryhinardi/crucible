@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import type { FlagSchema, FlagVariants, EvaluationContext } from '@crucible/core';
+import type { FlagSchema, FlagVariants, EvaluationContext } from 'crucible-core';
 
 type FlagClient = {
   initialize(): Promise<void>;
