@@ -1,9 +1,25 @@
 {
   "name": "@crucible/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "Type-safe, provider-agnostic feature flags and A/B testing core library",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ferryhinardi/crucible.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "feature-flags",
+    "feature-toggles",
+    "ab-testing",
+    "experiments",
+    "typescript",
+    "type-safe",
+    "rollouts"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

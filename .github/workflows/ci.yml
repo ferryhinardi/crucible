@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Lint
+        run: yarn lint
+      
+      - name: Typecheck
+        run: yarn typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build packages
+        run: yarn build
+      
+      - name: Run tests
+        run: yarn test --run --coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          fail_ci_if_error: false
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build
+        run: yarn build
+      
+      - name: Check bundle sizes
+        run: |
+          echo "## Bundle Sizes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | ESM | DTS |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-----|-----|" >> $GITHUB_STEP_SUMMARY
+          
+          for pkg in packages/core packages/react packages/adapters/local packages/adapters/launchdarkly; do
+            if [ -f "$pkg/dist/index.js" ]; then
+              pkg_name=$(basename $(dirname $pkg))/$(basename $pkg)
+              if [[ "$pkg" == *"adapters"* ]]; then
+                pkg_name="adapters/$(basename $pkg)"
+              else
+                pkg_name=$(basename $pkg)
+              fi
+              esm_size=$(du -h "$pkg/dist/index.js" | cut -f1)
+              dts_size=$(du -h "$pkg/dist/index.d.ts" | cut -f1)
+              echo "| $pkg_name | $esm_size | $dts_size |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done

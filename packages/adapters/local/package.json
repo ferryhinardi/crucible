@@ -1,9 +1,23 @@
 {
   "name": "@crucible/adapter-local",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "Local JSON adapter for Crucible feature flags (development use)",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ferryhinardi/crucible.git",
+    "directory": "packages/adapters/local"
+  },
+  "keywords": [
+    "crucible",
+    "adapter",
+    "local",
+    "development",
+    "feature-flags"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

@@ -251,6 +251,29 @@ yarn test
 yarn dev
 ```
 
+## Publishing (for maintainers)
+
+1. Create a changeset:
+   ```bash
+   yarn changeset
+   ```
+
+2. Version packages:
+   ```bash
+   yarn changeset version
+   ```
+
+3. Publish to npm:
+   ```bash
+   yarn changeset publish
+   ```
+
+Or use the GitHub Actions workflow: **Actions → Publish → Run workflow**
+
+## Contributing
+
+Contributions welcome! Please read our contributing guidelines and submit PRs.
+
 ## License
 
 MIT

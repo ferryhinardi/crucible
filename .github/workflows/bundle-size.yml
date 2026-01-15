@@ -1,0 +1,82 @@
+name: Bundle Size
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  size:
+    name: Check Bundle Size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build current branch
+        run: yarn build
+      
+      - name: Save current sizes
+        run: |
+          mkdir -p /tmp/current
+          find packages -name "dist" -type d -exec du -sb {} \; > /tmp/current/sizes.txt
+      
+      - name: Checkout base branch
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git checkout origin/${{ github.base_ref }}
+      
+      - name: Install dependencies (base)
+        run: yarn install --frozen-lockfile
+      
+      - name: Build base branch
+        run: yarn build
+      
+      - name: Save base sizes
+        run: |
+          mkdir -p /tmp/base
+          find packages -name "dist" -type d -exec du -sb {} \; > /tmp/base/sizes.txt
+      
+      - name: Compare sizes
+        run: |
+          echo "## Bundle Size Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Base | Current | Diff |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|------|---------|------|" >> $GITHUB_STEP_SUMMARY
+          
+          while IFS=$'\t' read -r size_current path_current; do
+            pkg=$(echo "$path_current" | sed 's|packages/||' | sed 's|/dist||')
+            
+            # Find corresponding base size
+            size_base=$(grep "$path_current" /tmp/base/sizes.txt | cut -f1 || echo "0")
+            
+            if [ "$size_base" != "0" ]; then
+              diff=$((size_current - size_base))
+              diff_pct=$(awk "BEGIN {printf \"%.1f\", ($diff / $size_base) * 100}")
+              
+              if [ $diff -gt 0 ]; then
+                diff_str="+${diff} bytes (+${diff_pct}%)"
+              elif [ $diff -lt 0 ]; then
+                diff_str="${diff} bytes (${diff_pct}%)"
+              else
+                diff_str="No change"
+              fi
+              
+              echo "| $pkg | $size_base | $size_current | $diff_str |" >> $GITHUB_STEP_SUMMARY
+              
+              # Fail if increase > 20KB
+              if [ $diff -gt 20480 ]; then
+                echo "::error::Bundle size increased by more than 20KB for $pkg"
+                exit 1
+              fi
+            fi
+          done < /tmp/current/sizes.txt
