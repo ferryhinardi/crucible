@@ -85,6 +85,103 @@ function Checkout() {
 }
 ```
 
+## Implementation Guide
+
+### Setup Checklist
+
+**1. Define flags in a central file** (e.g., `flags.ts`):
+
+```typescript
+import { defineFlags } from '@crucible/core';
+
+export const flags = defineFlags({
+  'feature-name': ['control', 'variant-a', 'variant-b'] as const,
+  'boolean-flag': ['on', 'off'] as const,
+  'dynamic-text': 'string' as const,
+});
+
+export type FlagsSchema = typeof flags;
+```
+
+**2. Initialize client once at app startup:**
+
+```typescript
+// client.ts
+import { createFlagClient } from '@crucible/core';
+import { LocalAdapter } from '@crucible/adapter-local';
+import { flags } from './flags';
+
+export const flagClient = createFlagClient({
+  adapter: new LocalAdapter<typeof flags>({
+    flags: {
+      'feature-name': 'control',
+      'boolean-flag': 'off',
+      'dynamic-text': 'Default message',
+    },
+  }),
+  schema: flags,
+  onExposure: (flag, variant, context) => {
+    // Track to your analytics (Mixpanel, Amplitude, etc.)
+    analytics.track('feature_flag_exposed', {
+      flag: String(flag),
+      variant,
+      userId: context.userId,
+    });
+  },
+});
+
+// Important: Initialize before use
+await flagClient.initialize();
+```
+
+**3. Wrap app with FlagProvider:**
+
+```tsx
+// App.tsx or layout.tsx (Next.js)
+import { FlagProvider } from '@crucible/react';
+import { flagClient } from './client';
+
+function App() {
+  return (
+    <FlagProvider client={flagClient} context={{ userId: currentUser.id }}>
+      <YourApp />
+    </FlagProvider>
+  );
+}
+```
+
+**4. Use flags in components:**
+
+```tsx
+import { useFlag } from '@crucible/react';
+
+function FeatureComponent() {
+  const variant = useFlag('feature-name', 'control');
+  
+  if (variant === 'variant-a') {
+    return <NewFeature />;
+  }
+  
+  return <OldFeature />;
+}
+```
+
+### Important Considerations
+
+✅ **Always provide a default value** to `useFlag()` for SSR safety and fallback behavior
+
+✅ **Initialize client before rendering** to avoid "Client not initialized" errors
+
+✅ **Use `as const`** on flag definitions for proper TypeScript inference
+
+✅ **Track exposures** via `onExposure` callback for experiment analytics
+
+⚠️ **Don't initialize multiple clients** - create one client and reuse it
+
+⚠️ **Don't call `useFlag` conditionally** - React hooks rules apply
+
+⚠️ **Percentage rollouts require `userId`** - without it, falls back to default
+
 ## Advanced Usage
 
 ### Percentage Rollouts
