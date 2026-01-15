@@ -1,5 +1,5 @@
 {
-  "name": "@crucible/adapter-launchdarkly",
+  "name": "@ferryhinardi/crucible-adapter-launchdarkly",
   "version": "0.1.0",
   "description": "LaunchDarkly adapter for Crucible feature flags",
   "type": "module",
@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@crucible/core": "*",
+    "@ferryhinardi/crucible-core": "*",
     "launchdarkly-node-server-sdk": "^7.0.0"
   },
   "devDependencies": {

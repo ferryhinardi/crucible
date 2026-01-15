@@ -1,5 +1,5 @@
 {
-  "name": "@crucible/react",
+  "name": "@ferryhinardi/crucible-react",
   "version": "0.1.0",
   "description": "React hooks and components for Crucible feature flags",
   "type": "module",
@@ -32,7 +32,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@crucible/core": "*"
+    "@ferryhinardi/crucible-core": "*"
   },
   "peerDependencies": {
     "react": ">=18"
