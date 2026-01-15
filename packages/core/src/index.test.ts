@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { defineFlags, createFlagClient } from './index';
-import type { FlagAdapter, EvaluationContext } from './index';
+import type { FlagAdapter } from './index';
 
 describe('defineFlags', () => {
   it('should return the schema as-is', () => {
@@ -93,7 +93,7 @@ describe('createFlagClient', () => {
     const client = createFlagClient({
       adapter: mockAdapter,
       schema,
-      defaultContext: { country: 'ID' },
+      defaultContext: { attributes: { country: 'ID' } },
     });
 
     await client.initialize();
@@ -101,7 +101,7 @@ describe('createFlagClient', () => {
 
     expect(mockAdapter.evaluate).toHaveBeenCalledWith(
       'test-flag',
-      { country: 'ID', userId: '123' },
+      { attributes: { country: 'ID' }, userId: '123' },
       'a'
     );
   });
