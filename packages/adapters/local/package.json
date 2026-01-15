@@ -1,5 +1,5 @@
 {
-  "name": "@ferryhinardi/crucible-adapter-local",
+  "name": "crucible-adapter-local",
   "version": "0.1.0",
   "description": "Local JSON adapter for Crucible feature flags (development use)",
   "type": "module",
@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ferryhinardi/crucible-core": "*"
+    "crucible-core": "*"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

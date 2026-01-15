@@ -1,5 +1,5 @@
 {
-  "name": "@ferryhinardi/crucible-core",
+  "name": "crucible-core",
   "version": "0.1.0",
   "description": "Type-safe, provider-agnostic feature flags and A/B testing core library",
   "type": "module",
