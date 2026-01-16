@@ -44,7 +44,21 @@ export function defineFlags<T extends FlagSchema>(schema: T): T {
   return schema;
 }
 
-export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<T>) {
+/**
+ * Generic flag client interface that can be used with any schema.
+ * Use this type when you need to pass a client to components that don't need schema type safety.
+ */
+export interface FlagClient<T extends FlagSchema = FlagSchema> {
+  initialize(): Promise<void>;
+  evaluate<K extends keyof T & string>(
+    flag: K,
+    context?: EvaluationContext,
+    defaultValue?: FlagVariants<T>[K]
+  ): Promise<FlagVariants<T>[K]>;
+  close(): Promise<void>;
+}
+
+export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<T>): FlagClient<T> {
   const { adapter, schema, onExposure, defaultContext = {} } = config;
 
   let initialized = false;
@@ -56,7 +70,7 @@ export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<
       initialized = true;
     },
 
-    async evaluate<K extends keyof T>(
+    async evaluate<K extends keyof T & string>(
       flag: K,
       context: EvaluationContext = {},
       defaultValue?: FlagVariants<T>[K]

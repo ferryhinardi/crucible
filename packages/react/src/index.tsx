@@ -1,17 +1,13 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import type { FlagSchema, FlagVariants, EvaluationContext } from 'crucible-core';
+import type { FlagSchema, FlagVariants, EvaluationContext, FlagClient } from 'crucible-core';
 
-type FlagClient = {
-  initialize(): Promise<void>;
-  evaluate<K extends string>(
-    flag: K,
-    context?: EvaluationContext,
-    defaultValue?: unknown
-  ): Promise<unknown>;
-  close(): Promise<void>;
-};
+/**
+ * Base FlagClient type that accepts any schema.
+ * This allows FlagProvider to accept typed clients from createFlagClient<T>.
+ */
+type AnyFlagClient = FlagClient<FlagSchema>;
 
 export type FlagStatus = {
   isLoading: boolean;
@@ -19,7 +15,7 @@ export type FlagStatus = {
 };
 
 const FlagContext = createContext<{
-  client: FlagClient | null;
+  client: AnyFlagClient | null;
   context: EvaluationContext;
 }>({ client: null, context: {} });
 
@@ -28,7 +24,7 @@ export function FlagProvider({
   context = {},
   children,
 }: {
-  client: FlagClient;
+  client: AnyFlagClient;
   context?: EvaluationContext;
   children: ReactNode;
 }) {
@@ -122,7 +118,7 @@ export function useFlagWithStatus<T extends FlagSchema, K extends keyof T>(
 /**
  * Hook to get the flag client for advanced use cases.
  */
-export function useFlagClient(): FlagClient | null {
+export function useFlagClient(): AnyFlagClient | null {
   const { client } = useContext(FlagContext);
   return client;
 }
