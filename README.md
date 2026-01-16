@@ -1,7 +1,7 @@
 # Crucible
 
 [![CI](https://github.com/ferryhinardi/crucible/actions/workflows/ci.yml/badge.svg)](https://github.com/ferryhinardi/crucible/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/@crucible%2Fcore.svg)](https://www.npmjs.com/package/@crucible/core)
+[![npm version](https://badge.fury.io/js/crucible-core.svg)](https://www.npmjs.com/package/crucible-core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 
@@ -47,15 +47,15 @@ Type-safe, provider-agnostic feature flags and A/B testing for React/Next.js.
 ## Install
 
 ```bash
-yarn add @crucible/core @crucible/react @crucible/adapter-local
+npm install crucible-core crucible-react crucible-adapter-local
 ```
 
 ## Quick start
 
 ```typescript
-import { defineFlags, createFlagClient } from '@crucible/core';
-import { LocalAdapter } from '@crucible/adapter-local';
-import { FlagProvider, useFlag } from '@crucible/react';
+import { defineFlags, createFlagClient } from 'crucible-core';
+import { LocalAdapter } from 'crucible-adapter-local';
+import { FlagProvider, useFlag } from 'crucible-react';
 
 // 1. Define schema
 const flags = defineFlags({
@@ -84,7 +84,7 @@ await client.initialize();
 // 4. Use in components
 function Checkout() {
   const variant = useFlag('checkout-redesign', 'control');
-  
+
   if (variant === 'variant-a') return <NewCheckout />;
   return <OldCheckout />;
 }
@@ -97,7 +97,7 @@ function Checkout() {
 **1. Define flags in a central file** (e.g., `flags.ts`):
 
 ```typescript
-import { defineFlags } from '@crucible/core';
+import { defineFlags } from 'crucible-core';
 
 export const flags = defineFlags({
   'feature-name': ['control', 'variant-a', 'variant-b'] as const,
@@ -112,8 +112,8 @@ export type FlagsSchema = typeof flags;
 
 ```typescript
 // client.ts
-import { createFlagClient } from '@crucible/core';
-import { LocalAdapter } from '@crucible/adapter-local';
+import { createFlagClient } from 'crucible-core';
+import { LocalAdapter } from 'crucible-adapter-local';
 import { flags } from './flags';
 
 export const flagClient = createFlagClient({
@@ -143,7 +143,7 @@ await flagClient.initialize();
 
 ```tsx
 // App.tsx or layout.tsx (Next.js)
-import { FlagProvider } from '@crucible/react';
+import { FlagProvider } from 'crucible-react';
 import { flagClient } from './client';
 
 function App() {
@@ -158,15 +158,15 @@ function App() {
 **4. Use flags in components:**
 
 ```tsx
-import { useFlag } from '@crucible/react';
+import { useFlag } from 'crucible-react';
 
 function FeatureComponent() {
   const variant = useFlag('feature-name', 'control');
-  
+
   if (variant === 'variant-a') {
     return <NewFeature />;
   }
-  
+
   return <OldFeature />;
 }
 ```
@@ -194,22 +194,22 @@ function FeatureComponent() {
 Gradually release features to a percentage of users with deterministic bucketing:
 
 ```typescript
-import { LocalAdapter } from '@crucible/adapter-local';
+import { LocalAdapter } from 'crucible-adapter-local';
 
 const client = createFlagClient({
   adapter: new LocalAdapter({
     flags: {
-      'new-checkout': 'control'
+      'new-checkout': 'control',
     },
     rollouts: [
       {
         flag: 'new-checkout',
         percentage: 10, // 10% of users
-        variant: 'variant-a'
-      }
-    ]
+        variant: 'variant-a',
+      },
+    ],
   }),
-  schema: flags
+  schema: flags,
 });
 
 // Same userId always gets same variant (deterministic)
@@ -217,6 +217,7 @@ await client.evaluate('new-checkout', { userId: 'user-123' }); // Consistent res
 ```
 
 **Key features:**
+
 - Deterministic hashing ensures users always see the same variant
 - No userId? Falls back to default variant
 - Combine with rules for staged rollouts (e.g., 100% for internal team, 10% for public)
@@ -230,10 +231,10 @@ await client.evaluate('new-checkout', { userId: 'user-123' }); // Consistent res
 
 ## Packages
 
-- `@crucible/core` – Core client
-- `@crucible/react` – React hooks
-- `@crucible/adapter-local` – Local JSON adapter
-- `@crucible/adapter-launchdarkly` – LaunchDarkly adapter
+- `crucible-core` – Core client
+- `crucible-react` – React hooks
+- `crucible-adapter-local` – Local JSON adapter
+- `crucible-adapter-launchdarkly` – LaunchDarkly adapter
 
 ## Examples
 
@@ -244,31 +245,45 @@ await client.evaluate('new-checkout', { userId: 'user-123' }); // Consistent res
 
 ```bash
 # Install dependencies
-yarn install
+npm install
 
 # Build all packages
-yarn build
+npm run build
 
 # Run tests
-yarn test
+npm test
 
 # Dev mode (watch)
-yarn dev
+npm run dev
 ```
 
 ## Publishing (for maintainers)
 
 1. Create a changeset:
+
    ```bash
-   yarn changeset
+   npx changeset
    ```
 
 2. Version packages:
+
+   ```bash
+   npx changeset version
+   ```
+
+3. Publish to npm:
+
+   ```bash
+   npx changeset publish
+   ```
+
+4. Version packages:
+
    ```bash
    yarn changeset version
    ```
 
-3. Publish to npm:
+5. Publish to npm:
    ```bash
    yarn changeset publish
    ```

@@ -16,43 +16,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
-      
+          cache: 'npm'
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
+        run: npm ci
+
       - name: Lint
-        run: yarn lint
-      
+        run: npm run lint
+
       - name: Typecheck
-        run: yarn typecheck
+        run: npm run typecheck
 
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
-      
+          cache: 'npm'
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
+        run: npm ci
+
       - name: Build packages
-        run: yarn build
-      
+        run: npm run build
+
       - name: Run tests
-        run: yarn test --run --coverage
-      
+        run: npm test -- --run --coverage
+
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
@@ -64,26 +64,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
-      
+          cache: 'npm'
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
+        run: npm ci
+
       - name: Build
-        run: yarn build
-      
+        run: npm run build
+
       - name: Check bundle sizes
         run: |
           echo "## Bundle Sizes" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Package | ESM | DTS |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|-----|-----|" >> $GITHUB_STEP_SUMMARY
-          
+
           for pkg in packages/core packages/react packages/adapters/local packages/adapters/launchdarkly; do
             if [ -f "$pkg/dist/index.js" ]; then
               pkg_name=$(basename $(dirname $pkg))/$(basename $pkg)

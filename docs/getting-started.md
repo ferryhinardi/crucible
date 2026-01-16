@@ -11,14 +11,14 @@ This guide will help you integrate Crucible into your application in under 5 min
 ## Installation
 
 ```bash
-# Using yarn
-yarn add @crucible/core @crucible/react @crucible/adapter-local
-
 # Using npm
-npm install @crucible/core @crucible/react @crucible/adapter-local
+npm install crucible-core crucible-react crucible-adapter-local
+
+# Using yarn
+yarn add crucible-core crucible-react crucible-adapter-local
 
 # Using pnpm
-pnpm add @crucible/core @crucible/react @crucible/adapter-local
+pnpm add crucible-core crucible-react crucible-adapter-local
 ```
 
 ## Step-by-Step Setup
@@ -28,18 +28,18 @@ pnpm add @crucible/core @crucible/react @crucible/adapter-local
 Create a central file for your feature flags (e.g., `src/flags.ts`):
 
 ```typescript
-import { defineFlags } from '@crucible/core';
+import { defineFlags } from 'crucible-core';
 
 export const flags = defineFlags({
   // Boolean flags (on/off)
   'dark-mode': ['on', 'off'] as const,
-  
+
   // Multi-variant A/B tests
   'checkout-flow': ['control', 'variant-a', 'variant-b'] as const,
-  
+
   // Dynamic string values
   'promo-message': 'string' as const,
-  
+
   // Numeric flags
   'max-items': 'number' as const,
 });
@@ -54,8 +54,8 @@ export type AppFlags = typeof flags;
 Create a client instance (e.g., `src/flagClient.ts`):
 
 ```typescript
-import { createFlagClient } from '@crucible/core';
-import { LocalAdapter } from '@crucible/adapter-local';
+import { createFlagClient } from 'crucible-core';
+import { LocalAdapter } from 'crucible-adapter-local';
 import { flags } from './flags';
 
 export const flagClient = createFlagClient({
@@ -104,16 +104,16 @@ For React applications:
 
 ```tsx
 // App.tsx or _app.tsx (Next.js)
-import { FlagProvider } from '@crucible/react';
+import { FlagProvider } from 'crucible-react';
 import { flagClient } from './flagClient';
 
 function App() {
   return (
-    <FlagProvider 
-      client={flagClient} 
-      context={{ 
+    <FlagProvider
+      client={flagClient}
+      context={{
         userId: getCurrentUser()?.id,
-        attributes: { country: 'US' }
+        attributes: { country: 'US' },
       }}
     >
       <YourApp />
@@ -126,7 +126,7 @@ For Next.js App Router:
 
 ```tsx
 // app/layout.tsx
-import { FlagProvider } from '@crucible/react';
+import { FlagProvider } from 'crucible-react';
 import { flagClient } from '@/lib/flagClient';
 
 export default function RootLayout({ children }) {
@@ -145,11 +145,11 @@ export default function RootLayout({ children }) {
 ### 4. Use Flags in Components
 
 ```tsx
-import { useFlag } from '@crucible/react';
+import { useFlag } from 'crucible-react';
 
 function CheckoutPage() {
   const flow = useFlag('checkout-flow', 'control');
-  
+
   switch (flow) {
     case 'variant-a':
       return <FastCheckout />;
@@ -163,7 +163,7 @@ function CheckoutPage() {
 function Header() {
   const darkMode = useFlag('dark-mode', 'off');
   const message = useFlag('promo-message', 'Welcome!');
-  
+
   return (
     <header className={darkMode === 'on' ? 'dark' : 'light'}>
       <div>{message}</div>
@@ -182,12 +182,8 @@ import { flagClient } from '@/lib/flagClient';
 
 export default async function Page() {
   // Evaluate on server
-  const flow = await flagClient.evaluate(
-    'checkout-flow',
-    { userId: 'server-user' },
-    'control'
-  );
-  
+  const flow = await flagClient.evaluate('checkout-flow', { userId: 'server-user' }, 'control');
+
   return <CheckoutPage initialFlow={flow} />;
 }
 ```
@@ -203,6 +199,7 @@ export default async function Page() {
 ## Common Pitfalls
 
 ❌ **Don't**: Initialize multiple clients
+
 ```typescript
 // Bad - creates multiple instances
 const client1 = createFlagClient(...);
@@ -210,12 +207,14 @@ const client2 = createFlagClient(...);
 ```
 
 ✅ **Do**: Create once, reuse everywhere
+
 ```typescript
 // Good - single instance exported
 export const flagClient = createFlagClient(...);
 ```
 
 ❌ **Don't**: Call useFlag conditionally
+
 ```typescript
 // Bad - breaks React rules
 if (condition) {
@@ -224,6 +223,7 @@ if (condition) {
 ```
 
 ✅ **Do**: Always call hooks unconditionally
+
 ```typescript
 // Good
 const flag = useFlag('my-flag');
@@ -231,6 +231,7 @@ if (condition && flag === 'on') { ... }
 ```
 
 ❌ **Don't**: Forget to initialize
+
 ```typescript
 // Bad - will throw error
 const client = createFlagClient(...);
@@ -238,6 +239,7 @@ const client = createFlagClient(...);
 ```
 
 ✅ **Do**: Initialize before rendering
+
 ```typescript
 // Good
 const client = createFlagClient(...);

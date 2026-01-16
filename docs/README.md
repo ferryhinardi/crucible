@@ -32,11 +32,11 @@ Crucible is a lightweight, type-safe feature flag and A/B testing library design
          ├── useFlag() hook
          │
 ┌────────▼────────┐
-│ @crucible/react │
+│ crucible-react  │
 └────────┬────────┘
          │
 ┌────────▼────────┐
-│ @crucible/core  │  ◄── Type-safe schema
+│ crucible-core   │  ◄── Type-safe schema
 └────────┬────────┘
          │
          ├── Adapter interface
@@ -50,19 +50,19 @@ Crucible is a lightweight, type-safe feature flag and A/B testing library design
 
 ```bash
 # Core packages
-yarn add @crucible/core @crucible/react
+npm install crucible-core crucible-react
 
 # Choose an adapter
-yarn add @crucible/adapter-local          # Development
-yarn add @crucible/adapter-launchdarkly   # Production
+npm install crucible-adapter-local          # Development
+npm install crucible-adapter-launchdarkly   # Production
 ```
 
 ## Quick Example
 
 ```typescript
-import { defineFlags, createFlagClient } from '@crucible/core';
-import { LocalAdapter } from '@crucible/adapter-local';
-import { FlagProvider, useFlag } from '@crucible/react';
+import { defineFlags, createFlagClient } from 'crucible-core';
+import { LocalAdapter } from 'crucible-adapter-local';
+import { FlagProvider, useFlag } from 'crucible-react';
 
 // 1. Define schema
 const flags = defineFlags({
