@@ -29,7 +29,8 @@
   "scripts": {
     "build": "tsup src/index.tsx --format esm --dts",
     "dev": "tsup src/index.tsx --format esm --dts --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "crucible-core": "*"
@@ -38,9 +39,13 @@
     "react": ">=18"
   },
   "devDependencies": {
+    "@testing-library/react": "^14.1.2",
     "@types/react": "^18.2.45",
+    "jsdom": "^23.0.1",
     "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "^5.3.3",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "vitest": "^1.1.0"
   }
 }

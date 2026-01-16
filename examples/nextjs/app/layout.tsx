@@ -1,4 +1,4 @@
-import { FlagProvider } from '@crucible/react';
+import { FlagProvider } from 'crucible-react';
 import { client } from './client';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

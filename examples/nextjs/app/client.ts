@@ -1,5 +1,5 @@
-import { defineFlags, createFlagClient } from '@crucible/core';
-import { LocalAdapter } from '@crucible/adapter-local';
+import { defineFlags, createFlagClient } from 'crucible-core';
+import { LocalAdapter } from 'crucible-adapter-local';
 
 const flags = defineFlags({
   'checkout-redesign': ['control', 'variant-a', 'variant-b'] as const,

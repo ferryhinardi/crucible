@@ -49,11 +49,10 @@ describe('createFlagClient', () => {
     const result = await client.evaluate('test-flag', { userId: '123' });
 
     expect(result).toBe('variant-a');
-    expect(onExposure).toHaveBeenCalledWith(
-      'test-flag',
-      'variant-a',
-      { userId: '123' }
-    );
+    expect(onExposure).toHaveBeenCalledWith('test-flag', 'variant-a', {
+      userId: '123',
+      attributes: {},
+    });
   });
 
   it('should return default value on adapter failure', async () => {
@@ -102,6 +101,39 @@ describe('createFlagClient', () => {
     expect(mockAdapter.evaluate).toHaveBeenCalledWith(
       'test-flag',
       { attributes: { country: 'ID' }, userId: '123' },
+      'a'
+    );
+  });
+
+  it('should deep merge attributes from default and evaluate context', async () => {
+    const mockAdapter: FlagAdapter = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      evaluate: vi.fn().mockResolvedValue('a'),
+    };
+
+    const schema = defineFlags({ 'test-flag': ['a', 'b'] });
+    const client = createFlagClient({
+      adapter: mockAdapter,
+      schema,
+      defaultContext: {
+        userId: 'default-user',
+        attributes: { country: 'ID', plan: 'free' },
+      },
+    });
+
+    await client.initialize();
+    await client.evaluate('test-flag', {
+      userId: '123',
+      attributes: { plan: 'premium', feature: 'beta' },
+    });
+
+    // userId should be overridden, attributes should be deep merged
+    expect(mockAdapter.evaluate).toHaveBeenCalledWith(
+      'test-flag',
+      {
+        userId: '123',
+        attributes: { country: 'ID', plan: 'premium', feature: 'beta' },
+      },
       'a'
     );
   });

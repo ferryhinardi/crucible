@@ -3,12 +3,12 @@ export type FlagSchema = Record<string, readonly string[] | 'string' | 'number' 
 export type InferVariant<T> = T extends readonly (infer U)[]
   ? U
   : T extends 'string'
-  ? string
-  : T extends 'number'
-  ? number
-  : T extends 'boolean'
-  ? boolean
-  : never;
+    ? string
+    : T extends 'number'
+      ? number
+      : T extends 'boolean'
+        ? boolean
+        : never;
 
 export type FlagVariants<T extends FlagSchema> = {
   [K in keyof T]: InferVariant<T[K]>;
@@ -32,7 +32,11 @@ export interface FlagAdapter<T extends FlagSchema = FlagSchema> {
 export interface FlagClientConfig<T extends FlagSchema> {
   adapter: FlagAdapter<T>;
   schema: T;
-  onExposure?: (flag: keyof T, variant: FlagVariants<T>[keyof T], context: EvaluationContext) => void;
+  onExposure?: (
+    flag: keyof T,
+    variant: FlagVariants<T>[keyof T],
+    context: EvaluationContext
+  ) => void;
   defaultContext?: EvaluationContext;
 }
 
@@ -42,7 +46,7 @@ export function defineFlags<T extends FlagSchema>(schema: T): T {
 
 export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<T>) {
   const { adapter, schema, onExposure, defaultContext = {} } = config;
-  
+
   let initialized = false;
 
   return {
@@ -61,7 +65,14 @@ export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<
         throw new Error('Client not initialized. Call initialize() first.');
       }
 
-      const mergedContext = { ...defaultContext, ...context };
+      const mergedContext: EvaluationContext = {
+        ...defaultContext,
+        ...context,
+        attributes: {
+          ...defaultContext.attributes,
+          ...context.attributes,
+        },
+      };
       const schemaDefault = getSchemaDefault(schema[flag]);
       const fallback = (defaultValue ?? schemaDefault) as FlagVariants<T>[K];
 
@@ -80,7 +91,7 @@ export function createFlagClient<T extends FlagSchema>(config: FlagClientConfig<
         await adapter.close();
       }
       initialized = false;
-    }
+    },
   };
 }
 

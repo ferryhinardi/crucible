@@ -8,5 +8,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
     },
+    // Use jsdom for React tests that need DOM APIs
+    environmentMatchGlobs: [['packages/react/**/*.test.{ts,tsx}', 'jsdom']],
   },
 });

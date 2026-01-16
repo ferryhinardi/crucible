@@ -26,19 +26,23 @@ export class LocalAdapter<T extends FlagSchema> implements FlagAdapter<T> {
     // No-op for local adapter
   }
 
+  async close(): Promise<void> {
+    // No-op for local adapter
+  }
+
   async evaluate<K extends keyof T>(
     flag: K,
     context: EvaluationContext,
     defaultValue: FlagVariants<T>[K]
   ): Promise<FlagVariants<T>[K]> {
     // Check rules first (highest priority)
-    const rule = this.config.rules?.find(r => r.flag === flag && r.match(context));
+    const rule = this.config.rules?.find((r) => r.flag === flag && r.match(context));
     if (rule) {
       return rule.variant as FlagVariants<T>[K];
     }
 
     // Check percentage rollouts
-    const rollout = this.config.rollouts?.find(r => r.flag === flag);
+    const rollout = this.config.rollouts?.find((r) => r.flag === flag);
     if (rollout && context.userId) {
       const isInRollout = this.isUserInRollout(
         context.userId,
