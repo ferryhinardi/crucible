@@ -23,7 +23,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm i
+        run: |
+          rm -rf node_modules package-lock.json
+          npm i
 
       - name: Lint
         run: npm run lint
@@ -43,7 +45,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm i
+        run: |
+          rm -rf node_modules package-lock.json
+          npm i
 
       - name: Build packages
         run: npm run build
@@ -69,7 +73,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm i
+        run: |
+          rm -rf node_modules package-lock.json
+          npm i
 
       - name: Build
         run: npm run build
