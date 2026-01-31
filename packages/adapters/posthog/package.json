@@ -1,6 +1,6 @@
 {
   "name": "crucible-adapter-posthog",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "PostHog adapter for Crucible feature flags",
   "type": "module",
   "main": "./dist/index.js",

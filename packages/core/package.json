@@ -1,6 +1,6 @@
 {
   "name": "crucible-core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Type-safe, provider-agnostic feature flags and A/B testing core library",
   "type": "module",
   "main": "./dist/index.js",

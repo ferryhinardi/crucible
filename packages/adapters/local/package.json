@@ -1,6 +1,6 @@
 {
   "name": "crucible-adapter-local",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Local JSON adapter for Crucible feature flags (development use)",
   "type": "module",
   "main": "./dist/index.js",
