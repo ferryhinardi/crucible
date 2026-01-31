@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { FlagProvider, useFlag, useFlagWithStatus, useFlagClient, useFlagContext } from '../index';
+import {
+  FlagProvider,
+  useFlag,
+  useFlagWithStatus,
+  useFlagClient,
+  useFlagContext,
+  useFlags,
+} from '../index';
 
 // Mock client factory
 const createMockClient = (overrides = {}) => ({
@@ -300,5 +307,233 @@ describe('useFlagContext', () => {
   it('should return empty object when outside FlagProvider', () => {
     const { result } = renderHook(() => useFlagContext());
     expect(result.current).toEqual({});
+  });
+});
+
+describe('useFlags', () => {
+  let consoleWarnSpy: MockInstance;
+  let consoleErrorSpy: MockInstance;
+
+  beforeEach(() => {
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should return loading status initially', () => {
+    const mockClient = createMockClient({
+      evaluate: vi.fn().mockImplementation(() => new Promise(() => {})),
+    });
+
+    const { result } = renderHook(
+      () =>
+        useFlags([
+          { flag: 'flag-a', defaultValue: 'default-a' },
+          { flag: 'flag-b', defaultValue: 'default-b' },
+        ]),
+      { wrapper: createWrapper(mockClient) }
+    );
+
+    expect(result.current.status.isLoading).toBe(true);
+    expect(result.current.status.error).toBeNull();
+    expect(result.current.values).toEqual({
+      'flag-a': 'default-a',
+      'flag-b': 'default-b',
+    });
+  });
+
+  it('should return all flag values after evaluation', async () => {
+    const mockClient = createMockClient({
+      evaluate: vi
+        .fn()
+        .mockResolvedValueOnce('value-a')
+        .mockResolvedValueOnce('value-b')
+        .mockResolvedValueOnce('value-c'),
+    });
+
+    const { result } = renderHook(
+      () =>
+        useFlags([
+          { flag: 'flag-a', defaultValue: 'default-a' },
+          { flag: 'flag-b', defaultValue: 'default-b' },
+          { flag: 'flag-c', defaultValue: 'default-c' },
+        ]),
+      { wrapper: createWrapper(mockClient) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.values).toEqual({
+      'flag-a': 'value-a',
+      'flag-b': 'value-b',
+      'flag-c': 'value-c',
+    });
+    expect(result.current.status.error).toBeNull();
+  });
+
+  it('should call evaluate for each flag with correct parameters', async () => {
+    const mockClient = createMockClient();
+    const context = { userId: '123', attributes: { country: 'US' } };
+
+    renderHook(
+      () =>
+        useFlags([
+          { flag: 'flag-a', defaultValue: 'default-a' },
+          { flag: 'flag-b', defaultValue: 'default-b' },
+        ]),
+      { wrapper: createWrapper(mockClient, context) }
+    );
+
+    await waitFor(() => {
+      expect(mockClient.evaluate).toHaveBeenCalledTimes(2);
+    });
+
+    expect(mockClient.evaluate).toHaveBeenCalledWith('flag-a', context, 'default-a');
+    expect(mockClient.evaluate).toHaveBeenCalledWith('flag-b', context, 'default-b');
+  });
+
+  it('should handle errors gracefully', async () => {
+    const mockClient = createMockClient({
+      evaluate: vi.fn().mockRejectedValue(new Error('Network error')),
+    });
+
+    const { result } = renderHook(
+      () =>
+        useFlags([
+          { flag: 'flag-a', defaultValue: 'default-a' },
+          { flag: 'flag-b', defaultValue: 'default-b' },
+        ]),
+      { wrapper: createWrapper(mockClient) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.status.error).toBeInstanceOf(Error);
+    expect(result.current.status.error?.message).toBe('Network error');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[Crucible] Error evaluating flags:',
+      expect.any(Error)
+    );
+  });
+
+  it('should return error when called outside FlagProvider', async () => {
+    const { result } = renderHook(() => useFlags([{ flag: 'flag-a', defaultValue: 'default-a' }]));
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.status.error).toBeInstanceOf(Error);
+    expect(result.current.status.error?.message).toBe('No FlagProvider found');
+    expect(consoleWarnSpy).toHaveBeenCalledWith('[Crucible] useFlags called outside FlagProvider');
+  });
+
+  it('should re-evaluate when flags change', async () => {
+    const mockClient = createMockClient({
+      evaluate: vi
+        .fn()
+        .mockResolvedValueOnce('value-a')
+        .mockResolvedValueOnce('value-b')
+        .mockResolvedValueOnce('value-c'),
+    });
+
+    const { result, rerender } = renderHook(({ flags }) => useFlags(flags), {
+      wrapper: createWrapper(mockClient),
+      initialProps: { flags: [{ flag: 'flag-a', defaultValue: 'default-a' }] },
+    });
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.values).toEqual({ 'flag-a': 'value-a' });
+
+    rerender({ flags: [{ flag: 'flag-b', defaultValue: 'default-b' }] });
+
+    await waitFor(() => {
+      expect(result.current.values).toEqual({ 'flag-b': 'value-b' });
+    });
+
+    expect(mockClient.evaluate).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not update state after unmount', async () => {
+    let resolveEvaluate: (value: string) => void;
+    const mockClient = createMockClient({
+      evaluate: vi.fn().mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveEvaluate = resolve;
+          })
+      ),
+    });
+
+    const { result, unmount } = renderHook(
+      () => useFlags([{ flag: 'flag-a', defaultValue: 'default-a' }]),
+      { wrapper: createWrapper(mockClient) }
+    );
+
+    expect(result.current.status.isLoading).toBe(true);
+
+    unmount();
+
+    await act(async () => {
+      resolveEvaluate!('value-a');
+    });
+
+    // Status should remain as it was before unmount
+    expect(result.current.status.isLoading).toBe(true);
+    expect(result.current.values).toEqual({ 'flag-a': 'default-a' });
+  });
+
+  it('should handle empty flags array', async () => {
+    const mockClient = createMockClient();
+
+    const { result } = renderHook(() => useFlags([]), {
+      wrapper: createWrapper(mockClient),
+    });
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.values).toEqual({});
+    expect(result.current.status.error).toBeNull();
+    expect(mockClient.evaluate).not.toHaveBeenCalled();
+  });
+
+  it('should handle flags without default values', async () => {
+    const mockClient = createMockClient({
+      evaluate: vi.fn().mockResolvedValue('evaluated-value'),
+    });
+
+    const { result } = renderHook(
+      () =>
+        useFlags([
+          { flag: 'flag-a' }, // No default value
+          { flag: 'flag-b', defaultValue: 'default-b' },
+        ]),
+      { wrapper: createWrapper(mockClient) }
+    );
+
+    // Initial state should only have the flag with default value
+    expect(result.current.values).toEqual({ 'flag-b': 'default-b' });
+
+    await waitFor(() => {
+      expect(result.current.status.isLoading).toBe(false);
+    });
+
+    expect(result.current.values).toEqual({
+      'flag-a': 'evaluated-value',
+      'flag-b': 'evaluated-value',
+    });
   });
 });

@@ -245,16 +245,16 @@ await client.evaluate('new-checkout', { userId: 'user-123' }); // Consistent res
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Build all packages
-npm run build
+pnpm build
 
 # Run tests
-npm test
+pnpm test
 
 # Dev mode (watch)
-npm run dev
+pnpm dev
 ```
 
 ## Publishing (for maintainers)
@@ -277,22 +277,11 @@ npm run dev
    npx changeset publish
    ```
 
-4. Version packages:
-
-   ```bash
-   yarn changeset version
-   ```
-
-5. Publish to npm:
-   ```bash
-   yarn changeset publish
-   ```
-
 Or use the GitHub Actions workflow: **Actions → Publish → Run workflow**
 
 ## Contributing
 
-Contributions welcome! Please read our contributing guidelines and submit PRs.
+Contributions welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) for details.
 
 ## License
 

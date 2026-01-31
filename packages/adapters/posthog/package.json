@@ -1,7 +1,7 @@
 {
-  "name": "crucible-adapter-local",
-  "version": "0.1.1",
-  "description": "Local JSON adapter for Crucible feature flags (development use)",
+  "name": "crucible-adapter-posthog",
+  "version": "0.1.0",
+  "description": "PostHog adapter for Crucible feature flags",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,14 +12,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ferryhinardi/crucible.git",
-    "directory": "packages/adapters/local"
+    "directory": "packages/adapters/posthog"
   },
   "keywords": [
     "crucible",
     "adapter",
-    "local",
-    "development",
-    "feature-flags"
+    "posthog",
+    "feature-flags",
+    "ab-testing",
+    "analytics"
   ],
   "module": "./dist/index.js",
   "exports": {
@@ -32,13 +33,16 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --minify --sourcemap",
     "dev": "tsup src/index.ts --format esm --dts --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
-    "crucible-core": "workspace:*"
+    "crucible-core": "workspace:*",
+    "posthog-node": "^4.0.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "vitest": "^1.1.0"
   }
 }

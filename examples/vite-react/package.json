@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "crucible-core": "*",
-    "crucible-react": "*",
-    "crucible-adapter-local": "*",
+    "crucible-core": "workspace:*",
+    "crucible-react": "workspace:*",
+    "crucible-adapter-local": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

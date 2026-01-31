@@ -12,36 +12,22 @@ This roadmap outlines the improvements and features planned for Crucible v0.2.0.
 
 ## Phase 1: Critical Fixes & Technical Debt (Week 1)
 
-### 1.1 Fix CI/CD Pipeline ⚠️ **HIGH PRIORITY**
+### 1.1 Fix CI/CD Pipeline ✅ **COMPLETED**
 
-The CI/CD workflows currently use `yarn` but the project has standardized on `npm`.
+The CI/CD workflows have been updated to use `pnpm`.
 
-**Files to update:**
+**Files updated:**
 
 - `.github/workflows/ci.yml`
 - `.github/workflows/publish.yml`
 - `.github/workflows/bundle-size.yml`
 
-**Changes required:**
-
-```yaml
-# Before
-cache: 'yarn'
-run: yarn install --frozen-lockfile
-run: yarn build
-
-# After
-cache: 'npm'
-run: npm ci
-run: npm run build
-```
-
 **Tasks:**
 
-- [ ] Update `ci.yml` to use npm
-- [ ] Update `publish.yml` to use npm
-- [ ] Update `bundle-size.yml` to use npm
-- [ ] Test CI pipeline with a PR
+- [x] Update `ci.yml` to use pnpm
+- [x] Update `publish.yml` to use pnpm
+- [x] Update `bundle-size.yml` to use pnpm
+- [x] Test CI pipeline with a PR
 
 ---
 
@@ -57,108 +43,108 @@ The README references scoped packages (`@crucible/core`) but actual npm packages
 
 ---
 
-### 1.3 Fix Vite CJS Deprecation Warning
+### 1.3 Fix Vite CJS Deprecation Warning ✅ **COMPLETED**
 
-Test output shows deprecation warning for Vite's CJS Node API.
+Test output showed deprecation warning for Vite's CJS Node API.
 
 **Tasks:**
 
-- [ ] Update vitest.config.ts to use ESM properly
-- [ ] Ensure all config files use ES modules
+- [x] Update vitest.config.ts to use ESM properly (renamed to `vitest.config.mts`)
+- [x] Ensure all config files use ES modules
 
 ---
 
 ## Phase 2: Complete Documentation (Week 1-2)
 
-### 2.1 Missing Documentation Files
+### 2.1 Missing Documentation Files ✅ **PARTIALLY COMPLETED**
 
 The `docs/README.md` references several documentation files that don't exist:
 
-| Document                  | Priority | Description                           |
-| ------------------------- | -------- | ------------------------------------- |
-| `docs/core-concepts.md`   | High     | Explain adapters, flags, contexts     |
-| `docs/api-reference.md`   | High     | Full API documentation                |
-| `docs/adapters/README.md` | Medium   | Guide to creating custom adapters     |
-| `docs/examples/README.md` | Medium   | Overview of example projects          |
-| `docs/migration.md`       | Low      | Migration guide (for future versions) |
+| Document                  | Priority | Status      | Description                           |
+| ------------------------- | -------- | ----------- | ------------------------------------- |
+| `docs/core-concepts.md`   | High     | ✅ Complete | Explain adapters, flags, contexts     |
+| `docs/api-reference.md`   | High     | ✅ Complete | Full API documentation                |
+| `docs/adapters/README.md` | Medium   | ✅ Complete | Guide to creating custom adapters     |
+| `docs/examples/README.md` | Medium   | ✅ Complete | Overview of example projects          |
+| `docs/migration.md`       | Low      | ⏳ Pending  | Migration guide (for future versions) |
 
 **Tasks:**
 
-- [ ] Create `docs/core-concepts.md`
-- [ ] Create `docs/api-reference.md`
-- [ ] Create `docs/adapters/README.md`
-- [ ] Create `docs/examples/README.md`
-- [ ] Update `docs/README.md` links
+- [x] Create `docs/core-concepts.md`
+- [x] Create `docs/api-reference.md`
+- [x] Create `docs/adapters/README.md`
+- [x] Create `docs/examples/README.md`
+- [x] Update `docs/README.md` links
 
 ---
 
-### 2.2 Add Missing Examples
+### 2.2 Add Missing Examples ✅ **COMPLETED**
 
 README mentions "Vite + React" example but only Next.js exists.
 
 **Tasks:**
 
-- [ ] Create `examples/vite-react/` example project
-- [ ] Add basic Vite + React setup with Crucible
-- [ ] Include README with setup instructions
+- [x] Create `examples/vite-react/` example project
+- [x] Add basic Vite + React setup with Crucible
+- [x] Include README with setup instructions
 
 ---
 
 ## Phase 3: New Features (Week 2-3)
 
-### 3.1 New Adapters
+### 3.1 New Adapters ✅ **PARTIALLY COMPLETED**
 
 **Potential adapters to add:**
 
-| Adapter                       | Priority | Description                       |
-| ----------------------------- | -------- | --------------------------------- |
-| `crucible-adapter-posthog`    | High     | PostHog feature flags integration |
-| `crucible-adapter-unleash`    | Medium   | Unleash open-source integration   |
-| `crucible-adapter-growthbook` | Medium   | GrowthBook integration            |
-| `crucible-adapter-split`      | Low      | Split.io integration              |
+| Adapter                       | Priority | Status      | Description                       |
+| ----------------------------- | -------- | ----------- | --------------------------------- |
+| `crucible-adapter-posthog`    | High     | ✅ Complete | PostHog feature flags integration |
+| `crucible-adapter-unleash`    | Medium   | ⏳ Pending  | Unleash open-source integration   |
+| `crucible-adapter-growthbook` | Medium   | ⏳ Pending  | GrowthBook integration            |
+| `crucible-adapter-split`      | Low      | ⏳ Pending  | Split.io integration              |
 
 **Tasks:**
 
-- [ ] Research PostHog SDK API
-- [ ] Implement `crucible-adapter-posthog`
-- [ ] Add comprehensive tests
-- [ ] Document usage
+- [x] Research PostHog SDK API
+- [x] Implement `crucible-adapter-posthog`
+- [x] Add comprehensive tests (17 tests)
+- [x] Document usage
 
 ---
 
-### 3.2 Enhanced React Hooks
+### 3.2 Enhanced React Hooks ✅ **PARTIALLY COMPLETED**
 
 **New hooks to consider:**
 
 ```typescript
-// Batch flag evaluation for performance
+// Batch flag evaluation for performance ✅ IMPLEMENTED
 function useFlags<K extends keyof T>(keys: K[]): Record<K, T[K]>;
 
-// Flag with exposure tracking
+// Flag with exposure tracking (future)
 function useFlagWithExposure<K extends keyof T>(
   key: K,
   options?: { trackOnRender?: boolean }
 ): T[K];
 
-// Prefetch flags for SSR
+// Prefetch flags for SSR (future)
 function usePrefetchFlags(): Promise<void>;
 ```
 
 **Tasks:**
 
-- [ ] Implement `useFlags()` for batch evaluation
+- [x] Implement `useFlags()` for batch evaluation
 - [ ] Add exposure tracking utilities
 - [ ] Add SSR prefetching helpers
 
 ---
 
-### 3.3 Server Components Support (Next.js App Router)
+### 3.3 Server Components Support (Next.js App Router) ✅ **COMPLETED**
 
 Add first-class support for React Server Components:
 
 ```typescript
-// Server-side flag evaluation
-import { getFlag } from 'crucible-react/server';
+// Server-side flag evaluation ✅ IMPLEMENTED
+import { getFlag, getFlags, getFlagClient } from 'crucible-react/server';
 
 async function ServerComponent() {
   const showFeature = await getFlag('new-feature');
@@ -168,10 +154,11 @@ async function ServerComponent() {
 
 **Tasks:**
 
-- [ ] Research RSC patterns for feature flags
-- [ ] Create `crucible-react/server` entry point
-- [ ] Add server-side utilities
-- [ ] Update Next.js example with App Router
+- [x] Research RSC patterns for feature flags
+- [x] Create `crucible-react/server` entry point
+- [x] Add server-side utilities (`getFlag`, `getFlags`, `getFlagClient`, `createServerFlagProvider`)
+- [x] Add comprehensive tests (23 tests)
+- [ ] Update Next.js example with App Router usage
 
 ---
 
@@ -351,28 +338,33 @@ Browser extension or overlay for debugging flags:
 
 ## Summary: Priority Matrix
 
-| Priority    | Task                      | Effort | Impact |
-| ----------- | ------------------------- | ------ | ------ |
-| 🔴 Critical | Fix CI/CD (yarn → npm)    | Low    | High   |
-| 🔴 Critical | Fix README package names  | Low    | High   |
-| 🟠 High     | Complete missing docs     | Medium | High   |
-| 🟠 High     | Add Vite example          | Medium | Medium |
-| 🟠 High     | PostHog adapter           | Medium | High   |
-| 🟡 Medium   | Server Components support | High   | High   |
-| 🟡 Medium   | Analytics callbacks       | Medium | Medium |
-| 🟡 Medium   | DevTools                  | High   | Medium |
-| 🟢 Low      | CLI tool                  | High   | Medium |
-| 🟢 Low      | Additional adapters       | Medium | Low    |
+| Priority    | Task                      | Effort | Impact | Status      |
+| ----------- | ------------------------- | ------ | ------ | ----------- |
+| 🔴 Critical | Fix CI/CD (yarn → pnpm)   | Low    | High   | ✅ Complete |
+| 🔴 Critical | Fix README package names  | Low    | High   | ✅ Complete |
+| 🟠 High     | Complete missing docs     | Medium | High   | ✅ Complete |
+| 🟠 High     | Add Vite example          | Medium | Medium | ✅ Complete |
+| 🟠 High     | PostHog adapter           | Medium | High   | ✅ Complete |
+| 🟡 Medium   | Server Components support | High   | High   | ✅ Complete |
+| 🟡 Medium   | Analytics callbacks       | Medium | Medium | ⏳ Pending  |
+| 🟡 Medium   | DevTools                  | High   | Medium | ⏳ Pending  |
+| 🟢 Low      | CLI tool                  | High   | Medium | ⏳ Pending  |
+| 🟢 Low      | Additional adapters       | Medium | Low    | ⏳ Pending  |
 
 ---
 
 ## Quick Wins (Can be done immediately)
 
-1. ✅ Fix CI/CD workflows (yarn → npm)
+1. ✅ Fix CI/CD workflows (yarn → pnpm)
 2. ✅ Fix README package names
-3. ✅ Fix Vite CJS deprecation
+3. ✅ Fix Vite CJS deprecation (renamed to `vitest.config.mts`)
 4. ✅ Create core-concepts.md
 5. ✅ Create api-reference.md
+6. ✅ Create adapters/README.md
+7. ✅ Create examples/README.md
+8. ✅ PostHog adapter implementation
+9. ✅ useFlags() batch hook
+10. ✅ Server Components support
 
 ---
 
@@ -398,4 +390,4 @@ To contribute to any of these improvements:
 
 ---
 
-_Last updated: January 16, 2026_
+_Last updated: January 31, 2026_
