@@ -13,14 +13,14 @@
     "crucible-core": "workspace:*",
     "crucible-react": "workspace:*",
     "crucible-adapter-local": "workspace:*",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "vite": "^7.3.1"
   }
 }
